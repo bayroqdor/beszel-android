@@ -1,4 +1,4 @@
-# 📊 Beszel Mobile
+# Beszel Mobile
 
 > **A beautiful, real-time mobile companion for your [Beszel](https://github.com/henrygd/beszel) server monitoring hub.**
 
@@ -11,38 +11,30 @@ Beszel Mobile brings your server metrics to your pocket. Connect to your existin
 
 ---
 
-## ✨ Features
+## Features
 
-- **🚀 Real-Time Dashboard**
+- **Real-Time Dashboard**
   - Live updates of all your connected systems.
   - At-a-glance status indicators (UP/DOWN).
   - Current CPU, Memory, and Disk usage percentages.
 
-- **📈 Detailed Analytics**
+- **Detailed Analytics**
   - Interactive historical charts for **CPU**, **Memory**, **Disk**, and **Network Traffic**.
   - Precise tooltip data on touch.
   - Dynamic X-axis (Time) and Y-axis (Usage/Bandwidth) scaling.
 
-- **🔔 Smart Alerts System**
+- **Smart Alerts System**
   - **Local Push Notifications**: Get notified instantly on your device if a server goes down or resource usage spikes (>90%).
   - **Alert History**: Persistent log of all past critical events.
   - **Background Monitoring**: (Active when app is running).
 
-- **🌍 Localization & Theming**
+- **Localization & Theming**
   - **Multi-language Support**: Fully localized in **English** 🇺🇸 and **Russian** 🇷🇺.
   - **Dark/Light Mode**: Seamlessly switches based on your system preference or manual toggle.
 
 ---
 
-## 📸 Screenshots
-
-| Dashboard | System Details | Dark Mode |
-|:---:|:---:|:---:|
-| *(Add Dashboard Screenshot)* | *(Add Detail Screenshot)* | *(Add Dark Mode Screenshot)* |
-
----
-
-## 🛠️ Installation
+## Installation
 
 ### Prerequisites
 - [Flutter SDK](https://flutter.dev/docs/get-started/install) installed on your machine.
@@ -64,14 +56,9 @@ Beszel Mobile brings your server metrics to your pocket. Connect to your existin
     ```bash
     # For Android
     flutter run -d android
-
-    # For Windows
-    flutter run -d windows
-    ```
-
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 1.  **Open the App**: You will be greeted by the Setup Screen.
 2.  **Enter Server URL**: Input the full URL of your Beszel instance (e.g., `https://beszel.yourdomain.com`).
@@ -80,7 +67,7 @@ Beszel Mobile brings your server metrics to your pocket. Connect to your existin
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 - **Framework**: [Flutter](https://flutter.dev/)
 - **Backend SDK**: `pocketbase` (Dart client)
@@ -92,7 +79,7 @@ Beszel Mobile brings your server metrics to your pocket. Connect to your existin
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -102,8 +89,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4.  Push to the Branch (`git push origin feature/AmazingFeature`)
 5.  Open a Pull Request
 
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
