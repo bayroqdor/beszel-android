@@ -28,5 +28,8 @@
   "alert_high_cpu_title": "High CPU Usage",
   "alert_high_cpu_body": "{} CPU is at {}%",
   "alert_high_disk_title": "High Disk Usage",
-  "alert_high_disk_body": "{} Disk is at {}%"
+  "alert_high_disk_body": "{} Disk is at {}%",
+  "sort_name": "Name",
+  "sort_cpu": "CPU Usage",
+  "sort_ram": "RAM Usage"
 }

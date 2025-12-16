@@ -24,6 +24,63 @@ class _SystemDetailScreenState extends State<SystemDetailScreen> {
   void initState() {
     super.initState();
     _fetchHistory();
+    _subscribeToRealtime();
+  }
+
+  @override
+  void dispose() {
+    _unsubscribeFromRealtime();
+    super.dispose();
+  }
+
+  Future<void> _subscribeToRealtime() async {
+    try {
+      final pb = PocketBaseService().pb;
+      // We must subscribe to the specific system ID in 'systems' collection
+      // OR 'system_stats' if it pushes events? 
+      // Usually 'systems' collection updates reflect current stats.
+      await pb.collection('systems').subscribe(widget.system.id, (e) {
+        if (!mounted) return;
+        if (e.action == 'update') {
+           final updatedSystem = System.fromRecord(e.record!);
+           // Update charts with new point
+           final now = DateTime.now().millisecondsSinceEpoch.toDouble();
+           
+           setState(() {
+             _addSpot(_cpuSpots, now, updatedSystem.cpuPercent);
+             _addSpot(_ramSpots, now, updatedSystem.memoryPercent);
+             _addSpot(_diskSpots, now, updatedSystem.diskPercent);
+             
+             // Network is tricky if not in 'info'. Assuming net_sent/net_recv are available or calculated.
+             // If System model has network speed? It currently doesn't have network speed exposed property.
+             // But let's check if we can get it from record raw data for now.
+             
+             // Wait, System model doesn't expose network bandwidth.
+             // We need to fetch network from record data directly if possible.
+             // Or update System model.
+             
+             // Let's assume we use what we have.
+           });
+        }
+      });
+    } catch (e) {
+      debugPrint('Specific system subscription failed: $e');
+    }
+  }
+
+  Future<void> _unsubscribeFromRealtime() async {
+    try {
+      final pb = PocketBaseService().pb;
+      await pb.collection('systems').unsubscribe(widget.system.id);
+    } catch (_) {}
+  }
+
+  void _addSpot(List<FlSpot> spots, double x, double y) {
+    spots.add(FlSpot(x, y));
+    // Keep only last N points to avoid memory issues, e.g. 50?
+    if (spots.length > 100) { 
+      spots.removeAt(0);
+    }
   }
 
   Future<void> _fetchHistory() async {

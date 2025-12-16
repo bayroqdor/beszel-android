@@ -1,4 +1,5 @@
 import 'package:beszel_pro/models/system.dart';
+import 'dart:async';
 import 'package:beszel_pro/screens/system_detail_screen.dart';
 import 'package:beszel_pro/services/pocketbase_service.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,8 @@ import 'package:beszel_pro/services/notification_service.dart';
 import 'package:beszel_pro/services/alert_manager.dart';
 import 'package:beszel_pro/screens/alerts_screen.dart';
 
+enum SortOption { name, cpu, ram, disk }
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -24,6 +27,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<System> _systems = [];
   bool _isLoading = true;
   String? _error;
+  SortOption _currentSort = SortOption.name; // Default sort
+  Timer? _pollingTimer;
+
+  void _sortSystems() {
+    setState(() {
+      switch (_currentSort) {
+        case SortOption.name:
+          _systems.sort((a, b) => a.name.compareTo(b.name));
+          break;
+        case SortOption.cpu:
+          // Descending for metrics usually makes more sense
+          _systems.sort((a, b) => b.cpuPercent.compareTo(a.cpuPercent));
+          break;
+        case SortOption.ram:
+          _systems.sort((a, b) => b.memoryPercent.compareTo(a.memoryPercent));
+          break;
+        case SortOption.disk:
+          _systems.sort((a, b) => b.diskPercent.compareTo(a.diskPercent));
+          break;
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -32,10 +57,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
     AlertManager().loadAlerts();
     _fetchSystems();
     _subscribeToRealtime();
+    
+    // Polling fallback: every 5 seconds
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _pollSystems();
+    });
+  }
+
+  Future<void> _pollSystems() async {
+    // Silent fetch
+    try {
+      final pb = PocketBaseService().pb;
+      final records = await pb.collection('systems').getFullList(sort: '-updated');
+      if (!mounted) return;
+      
+      final newSystems = records.map((r) => System.fromRecord(r)).toList();
+      setState(() {
+        for (var newSys in newSystems) {
+           final index = _systems.indexWhere((s) => s.id == newSys.id);
+           if (index != -1) {
+             final oldSys = _systems[index];
+             _checkAlerts(oldSys, newSys);
+             _systems[index] = newSys;
+           } else {
+             _systems.add(newSys);
+           }
+        }
+        _sortSystems();
+      });
+    } catch (_) {}
+  }
+
+  void _checkAlerts(System oldSystem, System newSystem) {
+      // 1. Check for DOWN status
+      if (oldSystem.status == 'up' && newSystem.status == 'down') {
+        _triggerAlert(newSystem, tr('alert_system_down_title'), tr('alert_system_down_body', args: [newSystem.name]), 'error');
+      }
+      // 2. Check for High CPU (80%)
+      if (newSystem.cpuPercent > 80 && oldSystem.cpuPercent <= 80) {
+          _triggerAlert(newSystem, tr('alert_high_cpu_title'), tr('alert_high_cpu_body', args: [newSystem.name, newSystem.cpuPercent.toStringAsFixed(1)]), 'warning');
+      }
+      // 3. Check for High Disk (80%)
+      if (newSystem.diskPercent > 80 && oldSystem.diskPercent <= 80) {
+          _triggerAlert(newSystem, tr('alert_high_disk_title'), tr('alert_high_disk_body', args: [newSystem.name, newSystem.diskPercent.toStringAsFixed(1)]), 'warning');
+      }
   }
 
   @override
   void dispose() {
+    _pollingTimer?.cancel();
     _unsubscribeFromRealtime();
     super.dispose();
   }
@@ -54,6 +124,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (mounted) {
         setState(() {
           _systems = records.map((r) => System.fromRecord(r)).toList();
+          _sortSystems();
           _isLoading = false;
         });
       }
@@ -82,46 +153,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _systems.insert(0, System.fromRecord(e.record!));
           });
         } else if (e.action == 'update') {
-          // debugPrint('REALTIME UPDATE: ${e.record!.data}');
+          debugPrint('REALTIME EVENT: ${e.record!.data}');
           final updatedSystem = System.fromRecord(e.record!);
+          debugPrint('UPDATED STATS: CPU=${updatedSystem.cpuPercent}, RAM=${updatedSystem.memoryPercent}');
           
           setState(() {
             final index = _systems.indexWhere((s) => s.id == e.record!.id);
             if (index != -1) {
               final oldSystem = _systems[index];
-              
-              // 1. Check for DOWN status
-              if (oldSystem.status == 'up' && updatedSystem.status == 'down') {
-                _triggerAlert(
-                  updatedSystem, 
-                  tr('alert_system_down_title'), 
-                  tr('alert_system_down_body', args: [updatedSystem.name]),
-                  'error'
-                );
-              }
-
-              // 2. Check for High Resource Usage (e.g. > 90%)
-              if (updatedSystem.cpuPercent > 90 && oldSystem.cpuPercent <= 90) {
-                 _triggerAlert(
-                  updatedSystem, 
-                  tr('alert_high_cpu_title'), 
-                  tr('alert_high_cpu_body', args: [updatedSystem.name, updatedSystem.cpuPercent.toStringAsFixed(1)]),
-                  'warning'
-                );
-              }
-              
-              if (updatedSystem.diskPercent > 90 && oldSystem.diskPercent <= 90) {
-                 _triggerAlert(
-                  updatedSystem, 
-                  tr('alert_high_disk_title'), 
-                  tr('alert_high_disk_body', args: [updatedSystem.name, updatedSystem.diskPercent.toStringAsFixed(1)]),
-                  'warning'
-                );
-              }
-
+              _checkAlerts(oldSystem, updatedSystem);
               _systems[index] = updatedSystem;
+              _sortSystems();
             }
           });
+
         } else if (e.action == 'delete') {
           setState(() {
             _systems.removeWhere((s) => s.id == e.record!.id);
@@ -173,6 +218,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: Text(tr('dashboard')),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.sort),
+            tooltip: 'Sort by',
+            onPressed: () {
+               showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                       ListTile(
+                         leading: const Icon(Icons.sort_by_alpha),
+                         title: Text(tr('sort_name')),
+                         trailing: _currentSort == SortOption.name ? const Icon(Icons.check) : null,
+                         onTap: () {
+                           setState(() {
+                             _currentSort = SortOption.name;
+                             _sortSystems();
+                           });
+                           Navigator.pop(context);
+                         },
+                       ),
+                       ListTile(
+                         leading: const Icon(Icons.memory),
+                         title: Text(tr('sort_cpu')),
+                         trailing: _currentSort == SortOption.cpu ? const Icon(Icons.check) : null,
+                         onTap: () {
+                           setState(() {
+                             _currentSort = SortOption.cpu;
+                             _sortSystems();
+                           });
+                           Navigator.pop(context);
+                         },
+                       ),
+                       ListTile(
+                         leading: const Icon(Icons.storage),
+                         title: Text(tr('sort_ram')),
+                         trailing: _currentSort == SortOption.ram ? const Icon(Icons.check) : null,
+                         onTap: () {
+                           setState(() {
+                             _currentSort = SortOption.ram;
+                             _sortSystems();
+                           });
+                           Navigator.pop(context);
+                         },
+                       ),
+                    ],
+                  );
+                },
+               );
+            }
+          ),
           IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: () {
