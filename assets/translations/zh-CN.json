@@ -34,5 +34,22 @@
     "alert_high_ram_body": "{} 内存使用率达 {}%",
     "sort_name": "名称",
     "sort_cpu": "CPU 使用率",
-    "sort_ram": "内存 使用率"
+    "sort_ram": "内存 使用率",
+    "pin_security": "安全",
+    "enable_pin": "启用 PIN 保护?",
+    "pin_description": "使用 4 位 PIN 码保护您的应用。您可以稍后在用户信息中更改。",
+    "setup_pin": "设置 PIN",
+    "skip": "跳过",
+    "select_language": "选择语言",
+    "user_info": "用户信息",
+    "pin_code": "PIN 码",
+    "pin_manage_subtitle": "设置、更改或移除 PIN 码",
+    "manage_pin": "管理 PIN",
+    "manage_pin_content": "您想要更改还是移除 PIN 码？",
+    "remove": "移除",
+    "change": "更改",
+    "pin_removed": "PIN 码已移除",
+    "menu_user": "用户",
+    "menu_theme": "主题",
+    "menu_language": "语言"
 }

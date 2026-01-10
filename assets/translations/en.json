@@ -34,5 +34,22 @@
   "alert_high_ram_body": "{} RAM is at {}%",
   "sort_name": "Name",
   "sort_cpu": "CPU Usage",
-  "sort_ram": "RAM Usage"
+  "sort_ram": "RAM Usage",
+  "pin_security": "Security",
+  "enable_pin": "Enable PIN Protection?",
+  "pin_description": "Secure your app with a 4-digit PIN code. You can always change this later in User Settings.",
+  "setup_pin": "Setup PIN",
+  "skip": "Skip",
+  "select_language": "Select Language",
+  "user_info": "User Information",
+  "pin_code": "PIN Code",
+  "pin_manage_subtitle": "Set, change or remove your app PIN",
+  "manage_pin": "Manage PIN",
+  "manage_pin_content": "Do you want to change your PIN or remove it?",
+  "remove": "Remove",
+  "change": "Change",
+  "pin_removed": "PIN removed successfully",
+  "menu_user": "User",
+  "menu_theme": "Theme",
+  "menu_language": "Language"
 }

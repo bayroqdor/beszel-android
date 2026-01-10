@@ -51,9 +51,9 @@ class _SetupScreenState extends State<SetupScreen> {
       await prefs.setString('pb_url', url);
 
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
       }
     } catch (e) {
       setState(() {
@@ -74,7 +74,7 @@ class _SetupScreenState extends State<SetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Setup Connection'),
+        title: Text('setup_title'.tr()),
         actions: [
           PopupMenuButton<Locale>(
             icon: const Icon(Icons.language),
@@ -106,16 +106,19 @@ class _SetupScreenState extends State<SetupScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Enter Beszel Server URL',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                'enter_url'.tr(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               TextField(
                 controller: _urlController,
-                decoration: const InputDecoration(
-                  labelText: 'Server URL',
+                decoration: InputDecoration(
+                  labelText: 'server_url'.tr(),
                   hintText: 'https://monitor.mydomain.com',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.link),

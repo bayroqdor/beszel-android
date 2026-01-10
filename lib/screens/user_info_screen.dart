@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:beszel_pro/services/pocketbase_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:beszel_pro/screens/pin_screen.dart';
 import 'package:beszel_pro/services/pin_service.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -45,51 +46,71 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
       if (verified == true) {
         if (!mounted) return;
-        // Proceed to set new PIN
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const PinScreen(isSetup: true)),
+
+        // Ask to Remove or Change
+        final action = await showDialog<String>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('manage_pin'.tr()),
+            content: Text('manage_pin_content'.tr()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, 'remove'),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: Text('remove'.tr()),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, 'change'),
+                child: Text('change'.tr()),
+              ),
+            ],
+          ),
         );
+
+        if (!mounted) return;
+
+        if (action == 'remove') {
+          await PinService().removePin();
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('pin_removed'.tr())));
+          }
+        } else if (action == 'change') {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const PinScreen(isSetup: true)),
+          );
+        }
       }
     } else {
       // Set new PIN directly
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const PinScreen(isSetup: true)),
-      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const PinScreen(isSetup: true)));
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Information'),
-      ),
+      appBar: AppBar(title: Text('user_info'.tr())),
       body: ListView(
         children: [
           const SizedBox(height: 20),
-          const CircleAvatar(
-            radius: 40,
-            child: Icon(Icons.person, size: 40),
-          ),
+          const CircleAvatar(radius: 40, child: Icon(Icons.person, size: 40)),
           const SizedBox(height: 16),
           Center(
-            child: Text(
-              _email,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            child: Text(_email, style: Theme.of(context).textTheme.titleLarge),
           ),
           const SizedBox(height: 32),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.lock),
-            title: const Text('PIN Code'),
-            subtitle: const Text('Set or change your app PIN'),
+            title: Text('pin_code'.tr()),
+            subtitle: Text('pin_manage_subtitle'.tr()),
             trailing: const Icon(Icons.chevron_right),
             onTap: _handlePinParams,
           ),
-
         ],
       ),
     );

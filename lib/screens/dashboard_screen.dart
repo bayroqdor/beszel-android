@@ -454,7 +454,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.account_circle),
-            tooltip: 'User Menu',
+            tooltip: 'menu_user'.tr(),
             onSelected: (String value) {
               switch (value) {
                 case 'user':
@@ -475,7 +475,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     context: context,
                     builder: (BuildContext context) {
                       return SimpleDialog(
-                        title: const Text('Select Language'),
+                        title: Text('select_language'.tr()),
                         children: [
                           SimpleDialogOption(
                             onPressed: () {
@@ -509,11 +509,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'user',
                 child: ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text('User'),
+                  leading: const Icon(Icons.person),
+                  title: Text('menu_user'.tr()),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -529,15 +529,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ? Icons.light_mode
                         : Icons.dark_mode,
                   ),
-                  title: const Text('Theme'),
+                  title: Text('menu_theme'.tr()),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'language',
                 child: ListTile(
-                  leading: Icon(Icons.language),
-                  title: Text('Language'),
+                  leading: const Icon(Icons.language),
+                  title: Text('menu_language'.tr()),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),

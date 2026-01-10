@@ -33,5 +33,22 @@
     "alert_high_ram_body": "ОЗУ {} загружено на {}%",
     "sort_name": "Имя",
     "sort_cpu": "Загрузка ЦП",
-    "sort_ram": "Загрузка ОЗУ"
+    "sort_ram": "Загрузка ОЗУ",
+    "pin_security": "Безопасность",
+    "enable_pin": "Включить PIN-код?",
+    "pin_description": "Защитите приложение 4-значным PIN-кодом. Вы можете изменить его позже в настройках.",
+    "setup_pin": "Установить PIN",
+    "skip": "Пропустить",
+    "select_language": "Выберите язык",
+    "user_info": "Информация о пользователе",
+    "pin_code": "PIN-код",
+    "pin_manage_subtitle": "Установите, измените или удалите PIN-код",
+    "manage_pin": "Управление PIN-кодом",
+    "manage_pin_content": "Вы хотите изменить PIN-код или удалить его?",
+    "remove": "Удалить",
+    "change": "Изменить",
+    "pin_removed": "PIN-код удален",
+    "menu_user": "Пользователь",
+    "menu_theme": "Тема",
+    "menu_language": "Язык"
 }

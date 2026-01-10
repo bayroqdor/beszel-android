@@ -2,6 +2,7 @@ import 'package:beszel_pro/providers/app_provider.dart';
 import 'package:beszel_pro/screens/dashboard_screen.dart';
 import 'package:beszel_pro/screens/login_screen.dart';
 import 'package:beszel_pro/screens/setup_screen.dart';
+import 'package:beszel_pro/screens/language_screen.dart';
 import 'package:beszel_pro/services/pocketbase_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -86,6 +87,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
     try {
       final prefs = await SharedPreferences.getInstance();
+
+      // Check for first run
+      final isFirstRun = prefs.getBool('is_first_run') ?? true;
+      if (isFirstRun) {
+        _navigate(const LanguageScreen());
+        return;
+      }
+
       final url = prefs.getString('pb_url');
       debugPrint('Splash: URL from prefs: $url');
 
