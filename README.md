@@ -1,111 +1,84 @@
 # Beszel Mobile
 
-> **A beautiful, real-time mobile companion for your [Beszel](https://github.com/henrygd/beszel) server monitoring hub.**
+<p align="center">
+  <img src="assets/icon.png" width="120" alt="Beszel Logo" />
+</p>
 
-![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)
-![PocketBase](https://img.shields.io/badge/PocketBase-%23B8DBE4.svg?style=for-the-badge&logo=PocketBase&logoColor=black)
-![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+A cross-platform mobile client for [Beszel](https://github.com/henrygd/beszel), a lightweight server monitoring hub.
 
-Beszel Mobile brings your server metrics to your pocket. Connect to your existing Beszel instance to monitor CPU, RAM, Disk, and Network usage in real-time, receive local alerts for downtime, and view historical data with beautiful, interactive charts.
+This project is a fork of [beszel-android](https://github.com/bayroqdor/beszel-android), enhanced with new features, improved UI, and iOS support.
 
----
+## ✨ Features
 
-## What's New
-- **📶 Offline Mode**: Gracefully handles network loss with a dedicated "No Connection" screen and easy retry mechanic.
-- **🐧 OS Recognition**: Automatically detects and displays icons for **Windows** and **Linux** systems.
-- **🔔 Notification Center**: 
-    - **Badge Indicator**: See at a glance if you have active alerts directly from the AppBar.
-    - **Smart Suppression**: Prevents spam by silencing duplicate alerts until you clear the existing ones.
-- **🔐 PIN Security**: Secure your app with a 4-digit PIN code. Supports Setup, Verification, and automatic cleanup on logout.
-- **🔄 Custom Pull-to-Refresh**: Smooth, animated dashboard refreshing with a custom spinning icon.
+- **Dashboard**: View all your servers at a glance with real-time status, CPU, Memory, and Disk usage.
+- **Detailed Monitoring**: 
+  - **Task Manager Style View**: Deep dive into system performance with dedicated panels.
+  - **Per-Core CPU**: Visualize usage of every CPU core.
+  - **Network Traffic**: Monitor real-time upload/download rates for all interfaces.
+- **Security**: 
+  - **PIN Protection**: Secure your app with a 4-digit PIN.
+  - **Biometric Auth**: Unlock with Fingerprint or Face ID (iOS & Android).
+- **History**: Interactive charts for CPU, RAM, Disk, and Network usage (up to 24h history or more depending on server).
+- **Multi-OS Support**: Optimized for Android and iOS (iOS 14+ compatible).
+- **TrollStore Support**: Native support for generating unsigned IPAs for TrollStore users.
 
----
+## 📱 Screenshots
 
-## Features
+| Dashboard | System Detail | Security |
+|:---:|:---:|:---:|
+| <img src="screenshots/dashboard.jpg" width="200" alt="Dashboard" /> | <img src="screenshots/detail.jpg" width="200" alt="Detail View" /> | <img src="screenshots/security.jpg" width="200" alt="Security" /> |
 
-### 📊 Real-Time Dashboard
-- Live updates of all your connected systems.
-- **OS Icons**: Visual distinction between Windows and Linux servers.
-- **Status Indicators**: Instant visual feedback on system health (Green/Red).
-- **Sorting**: Sort systems by Name, CPU, RAM, or Disk usage.
-- **Pull-to-Refresh**: Manually refresh data with a fluid, custom animation.
+*(Screenshots to be added)*
 
-### 📈 Detailed Analytics
-- **Interactive Charts**: History for **CPU**, **Memory**, **Disk**, and **Network Traffic**.
-- **Precision Data**: Touch anywhere on the chart for exact metrics.
-- **Dynamic Scaling**: Charts adapt automatically to your data range.
+## 📥 Installation
 
-### 🔔 Smart Alerts System
-- **Notification Bell**: Dedicated icon with a **Red Badge** for unread alerts.
-- **Immediate Notifications**: Get notified instantly on your device if:
-    - A server goes **DOWN**.
-    - **CPU**, **RAM**, or **Disk** usage exceeds **80%**.
-- **Startup Protection**: Detects overloaded servers immediately when you open the app.
-- **Smart Logic**: Suppresses repetitive alerts while the issue remains unacknowledged.
-- **Alert History**: Persistent log of all past critical events.
+### Android
+Download the latest APK from [Releases](https://github.com/PTPAAA/beszel-mobile/releases).
 
-### 🌍 Localization & Customization
-- **Multi-language**: Fully localized in **English** 🇺🇸 and **Russian** 🇷🇺.
-- **Theme Support**: Beautiful **Dark** and **Light** modes.
-- **User Profiles**: View your account details with a dedicated User Info screen.
+### iOS
+#### TrollStore Users
+1. Download the `Beszel.ipa` from [Releases](https://github.com/PTPAAA/beszel-mobile/releases).
+2. Install via TrollStore.
 
----
+#### Standard Installation
+Due to Apple's restrictions, you must sign the app yourself using AltStore, Sideloadly, or a developer account.
 
-## Installation
+## 🛠️ Build from Source
 
 ### Prerequisites
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) installed on your machine.
-- A running instance of **[Beszel](https://github.com/henrygd/beszel)** (the backend).
+- Flutter SDK (3.10.x or newer, stable channel recommended)
+- Android Studio / Xcode
 
-### Steps
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/yourusername/beszel-mobile.git
-    cd beszel-mobile
-    ```
+### Android Build
+```bash
+flutter build apk --release
+```
 
-2.  **Install dependencies**:
-    ```bash
-    flutter pub get
-    ```
+### iOS Build
+**Standard (requires signing):**
+```bash
+flutter build ios --release
+```
 
-3.  **Run the app**:
-    ```bash
-    # For Android
-    flutter run -d android
-    ```
+**TrollStore (Unsigned IPA):**
+You can use the included GitHub Actions workflow or run:
+```bash
+# Mobile device with macOS or generic Linux/Mac build environment
+flutter build ios --release --no-codesign
+mkdir -p Payload
+cp -r build/ios/iphoneos/Runner.app Payload/
+zip -r Beszel.ipa Payload
+```
 
----
+## 🌍 Localization
+Supported languages:
+- 🇺🇸 English
+- 🇨🇳 Chinese (Simplified)
+- 🇷🇺 Russian
 
-## Configuration
+## 🤝 Credits
+- [Beszel](https://github.com/henrygd/beszel) - The amazing server monitoring hub.
+- [beszel-android](https://github.com/bayroqdor/beszel-android) - The original Android client project.
 
-1.  **Open the App**: You will be greeted by the Setup Screen.
-2.  **Enter Server URL**: Input the full URL of your Beszel instance (e.g., `https://beszel.yourdomain.com`).
-3.  **Login**: Use your existing Beszel credentials.
-4.  **Set PIN (Optional)**: Secure your session with a PIN code in the User Menu.
-
----
-
-## Tech Stack
-
-- **Framework**: [Flutter](https://flutter.dev/)
-- **Backend SDK**: `pocketbase` (Dart client)
-- **Charts**: `fl_chart`
-- **State Management**: `provider`
-- **Localization**: `easy_localization`
-- **Notifications**: `flutter_local_notifications`
-- **Styling**: Custom `custom_refresh_indicator`
-- **Storage**: `shared_preferences`
-
----
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1.  Fork the project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+## 📄 License
+MIT License

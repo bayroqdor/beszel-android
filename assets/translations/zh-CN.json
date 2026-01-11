@@ -80,5 +80,6 @@
     "confirm_pin": "确认 PIN 码",
     "pins_not_match": "PIN 码不匹配，请重试",
     "incorrect_pin": "PIN 码错误",
-    "biometric_auth_failed": "生物识别认证失败或已取消"
+    "biometric_auth_failed": "生物识别认证失败或已取消",
+    "refresh": "刷新"
 }

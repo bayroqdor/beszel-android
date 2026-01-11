@@ -756,7 +756,7 @@ class _SystemDetailScreenState extends State<SystemDetailScreen> {
     double? maxY = isPercent ? 100 : null;
     if (!isPercent && spots.isNotEmpty) {
       maxY = spots.map((s) => s.y).reduce((a, b) => a > b ? a : b) * 1.2;
-      if (maxY! < 1) maxY = 1;
+      if (maxY < 1) maxY = 1;
     }
 
     return SizedBox(

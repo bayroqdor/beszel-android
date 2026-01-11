@@ -80,5 +80,6 @@
   "confirm_pin": "Confirm PIN",
   "pins_not_match": "PINs do not match. Try again.",
   "incorrect_pin": "Incorrect PIN",
-  "biometric_auth_failed": "Biometric authentication failed or cancelled"
+  "biometric_auth_failed": "Biometric authentication failed or cancelled",
+  "refresh": "Refresh"
 }

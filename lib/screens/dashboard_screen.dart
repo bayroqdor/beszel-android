@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:beszel_pro/screens/system_detail_screen.dart';
 import 'package:beszel_pro/services/pocketbase_service.dart';
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
 import 'package:beszel_pro/screens/setup_screen.dart';
+
 import 'package:beszel_pro/providers/app_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:beszel_pro/screens/login_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:beszel_pro/services/notification_service.dart';
 import 'package:beszel_pro/services/alert_manager.dart';
@@ -336,7 +335,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
             icon: const Icon(Icons.refresh),
             label: Text(
-              tr('refresh') ?? 'Refresh',
+              tr('refresh'),
             ), // Fallback if 'refresh' key missing, though ideally add to en.json too or use Icon button
           ),
         ],
