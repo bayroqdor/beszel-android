@@ -336,8 +336,8 @@ class _SystemDetailScreenState extends State<SystemDetailScreen> {
         onTap: () => setState(() => _selectedCategory = index),
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          width: 100,
-          padding: const EdgeInsets.all(8),
+          width: 90,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
             color: isSelected
                 ? Theme.of(context).colorScheme.primaryContainer
@@ -354,23 +354,28 @@ class _SystemDetailScreenState extends State<SystemDetailScreen> {
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 20),
-              const SizedBox(height: 4),
+              Icon(icon, size: 18),
+              const SizedBox(height: 2),
               Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
-              if (value != null) ...[
-                const SizedBox(height: 2),
+              if (value != null)
                 Text(
-                  '${value.toStringAsFixed(1)}%',
-                  style: const TextStyle(fontSize: 11),
+                  '${value.toStringAsFixed(0)}%',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
+                  ),
                 ),
-              ],
             ],
           ),
         ),
@@ -667,37 +672,69 @@ class _SystemDetailScreenState extends State<SystemDetailScreen> {
   }
 
   Widget _buildCpuCoreGrid() {
+    // Calculate number of columns based on core count
+    int crossAxisCount = 4;
+    if (_cpuCoresUsage.length <= 2)
+      crossAxisCount = 2;
+    else if (_cpuCoresUsage.length <= 8)
+      crossAxisCount = 4;
+    else
+      crossAxisCount = 4;
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 2.5,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: 1.8,
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 6,
       ),
       itemCount: _cpuCoresUsage.length,
       itemBuilder: (context, index) {
         final usage = _cpuCoresUsage[index];
+        final color = _getUsageColor(usage.toDouble());
+
         return Container(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: color.withOpacity(0.3), width: 1),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('CPU $index', style: const TextStyle(fontSize: 9)),
-              const SizedBox(height: 2),
-              LinearProgressIndicator(
-                value: usage / 100,
-                backgroundColor: Colors.grey.withOpacity(0.3),
-                valueColor: AlwaysStoppedAnimation(
-                  _getUsageColor(usage.toDouble()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'CPU $index',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '$usage%',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: usage / 100,
+                  minHeight: 6,
+                  backgroundColor: Colors.grey.withOpacity(0.2),
+                  valueColor: AlwaysStoppedAnimation(color),
                 ),
               ),
-              Text('$usage%', style: const TextStyle(fontSize: 9)),
             ],
           ),
         );
