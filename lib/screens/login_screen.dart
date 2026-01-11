@@ -1,9 +1,10 @@
-import 'package:beszel_pro/screens/dashboard_screen.dart';
 import 'package:beszel_pro/services/pocketbase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:beszel_pro/services/pin_service.dart';
-import 'package:beszel_pro/screens/pin_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+import 'package:beszel_pro/screens/appearance_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,46 +27,49 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final pb = PocketBaseService().pb;
-      
-      await pb.collection('users').authWithPassword(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
+
+      await pb
+          .collection('users')
+          .authWithPassword(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
 
       if (mounted) {
         // Check if PIN is set
         final isPinSet = await PinService().isPinSet();
-        
+
         if (!mounted) return;
 
         if (!isPinSet) {
-           // Navigate to PIN setup
-           Navigator.of(context).pushReplacement(
-             MaterialPageRoute(
-               builder: (_) => PinScreen(
-                 isSetup: true,
-                 onSuccess: (ctx) {
-                   Navigator.of(ctx).pushReplacement(
-                     MaterialPageRoute(builder: (_) => const DashboardScreen()),
-                   );
-                 },
-               ),
-             ),
-           );
+          // New flow: Login -> Appearance -> PinDecision
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const AppearanceScreen()));
         } else {
-           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const DashboardScreen()),
-          );
+          // Even if PIN is set, verify/show appearance?
+          // Assuming first login on device means setup needed?
+          // Or just skip for existing?
+          // User wants "initialization".
+          // If checking isPinSet here, it implies it's checking the ACCOUNT's pin status or DEVICE's?
+          // PinService uses SharedPreferences, so it is DEVICE specific.
+          // If local pin is set, user has used app before on this device.
+          // So skipping appearance is fine.
+          // BUT if user WANTS to see it?
+          // Let's force it for newly logged in users (since they land on this screen).
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const AppearanceScreen()));
         }
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Login failed. Please check your credentials.'; 
+          _error = 'Login failed. Please check your credentials.';
           if (e is ClientException) {
-             _error = e.response['message']?.toString() ?? e.toString();
+            _error = e.response['message']?.toString() ?? e.toString();
           } else {
-             _error = e.toString();
+            _error = e.toString();
           }
         });
       }
@@ -81,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: Text('login'.tr())),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -95,10 +99,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 32),
                 TextField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email / Username',
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'email_username'.tr(),
+                    prefixIcon: const Icon(Icons.person),
+                    border: const OutlineInputBorder(),
                   ),
                   autocorrect: false,
                   textCapitalization: TextCapitalization.none,
@@ -106,10 +110,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'password'.tr(),
+                    prefixIcon: const Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
                   ),
                   obscureText: true,
                 ),
@@ -133,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Login'),
+                      : Text('login'.tr()),
                 ),
               ],
             ),

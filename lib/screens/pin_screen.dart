@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:beszel_pro/services/pin_service.dart';
+import 'package:beszel_pro/services/biometric_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class PinScreen extends StatefulWidget {
@@ -18,11 +19,51 @@ class _PinScreenState extends State<PinScreen> {
   bool _isConfirming = false;
   String _message = '';
   final PinService _pinService = PinService();
+  final BiometricService _biometricService = BiometricService();
+
+  bool _biometricAvailable = false;
+  bool _biometricEnabled = false;
 
   @override
   void initState() {
     super.initState();
-    _message = widget.isSetup ? 'Create PIN' : 'Enter PIN';
+    _message = widget.isSetup ? tr('create_pin') : tr('enter_pin');
+
+    // Check biometric availability for verification mode
+    if (!widget.isSetup) {
+      _checkBiometric();
+    }
+  }
+
+  Future<void> _checkBiometric() async {
+    final available = await _biometricService.isBiometricAvailable();
+    final enabled = await _biometricService.isBiometricEnabled();
+
+    if (mounted) {
+      setState(() {
+        _biometricAvailable = available;
+        _biometricEnabled = enabled;
+      });
+
+      // Auto-trigger biometric if available and enabled
+      if (available && enabled) {
+        _authenticateWithBiometric();
+      }
+    }
+  }
+
+  Future<void> _authenticateWithBiometric() async {
+    final success = await _biometricService.authenticate(
+      reason: tr('authenticate_fingerprint'),
+    );
+
+    if (success && mounted) {
+      if (widget.onSuccess != null) {
+        widget.onSuccess!(context);
+      } else {
+        Navigator.of(context).pop(true);
+      }
+    }
   }
 
   void _handleKeyPress(String value) {
@@ -50,15 +91,15 @@ class _PinScreenState extends State<PinScreen> {
         if (_pin == _confirmedPin) {
           await _pinService.setPin(_pin);
           if (mounted) {
-             if (widget.onSuccess != null) {
-               widget.onSuccess!(context);
-             } else {
-               Navigator.of(context).pop(true);
-             }
+            if (widget.onSuccess != null) {
+              widget.onSuccess!(context);
+            } else {
+              Navigator.of(context).pop(true);
+            }
           }
         } else {
           setState(() {
-            _message = 'PINs do not match. Try again.';
+            _message = tr('pins_not_match');
             _pin = '';
             _confirmedPin = '';
             _isConfirming = false;
@@ -69,7 +110,7 @@ class _PinScreenState extends State<PinScreen> {
           _confirmedPin = _pin;
           _pin = '';
           _isConfirming = true;
-          _message = 'Confirm PIN';
+          _message = tr('confirm_pin');
         });
       }
     } else {
@@ -77,15 +118,15 @@ class _PinScreenState extends State<PinScreen> {
       final isValid = await _pinService.verifyPin(_pin);
       if (isValid) {
         if (mounted) {
-           if (widget.onSuccess != null) {
-             widget.onSuccess!(context);
-           } else {
-             Navigator.of(context).pop(true);
-           }
+          if (widget.onSuccess != null) {
+            widget.onSuccess!(context);
+          } else {
+            Navigator.of(context).pop(true);
+          }
         }
       } else {
         setState(() {
-          _message = 'Incorrect PIN';
+          _message = tr('incorrect_pin');
           _pin = '';
         });
       }
@@ -128,35 +169,38 @@ class _PinScreenState extends State<PinScreen> {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildKey('1'),
-                      _buildKey('2'),
-                      _buildKey('3'),
-                    ],
+                    children: [_buildKey('1'), _buildKey('2'), _buildKey('3')],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [_buildKey('4'), _buildKey('5'), _buildKey('6')],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [_buildKey('7'), _buildKey('8'), _buildKey('9')],
                   ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildKey('4'),
-                      _buildKey('5'),
-                      _buildKey('6'),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildKey('7'),
-                      _buildKey('8'),
-                      _buildKey('9'),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const SizedBox(width: 80), // Empty space for alignment
+                      // Fingerprint button (only show in verify mode if available and enabled)
+                      SizedBox(
+                        width: 80,
+                        height: 80,
+                        child:
+                            (!widget.isSetup &&
+                                _biometricAvailable &&
+                                _biometricEnabled)
+                            ? IconButton(
+                                onPressed: _authenticateWithBiometric,
+                                icon: const Icon(Icons.fingerprint),
+                                iconSize: 40,
+                                color: Theme.of(context).colorScheme.primary,
+                              )
+                            : const SizedBox(),
+                      ),
                       _buildKey('0'),
                       SizedBox(
                         width: 80,

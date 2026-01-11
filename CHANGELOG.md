@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.2.0] - 2026-01-11
+
+### Added
+- **Biometric Authentication**: 
+  - Added optional Fingerprint/Face ID protection.
+  - Integration with PIN security: Auto-prompt on unlock.
+  - User settings toggle to enable/disable biometrics.
+- **Enhanced Detail View (Task Manager Style)**:
+  - Completely redesigned system detail screen.
+  - Added per-core CPU usage visualization.
+  - Added dedicated tabs/panels for CPU, Memory, Disk, and Network.
+  - Real-time charts for all metrics.
+  - Detailed Interface statistics (upload/download rates per interface).
+- **iOS Support**:
+  - Full compatibility with iOS 14+.
+  - **TrollStore Support**: GitHub Action workflow to generate unsigned IPA.
+- **Localization**:
+  - Added/Updated translations for English, Chinese (Simplified), and Russian.
+
+### Changed
+- **Network Monitoring**:
+  - Improved network traffic calculation to aggregate all interface deltas for accuracy.
+  - Adjusted unit formatting for network speeds.
+- **MainActivity**:
+  - Updated Android `MainActivity` to `FlutterFragmentActivity` for better plugin compatibility.
+
+---
+
 ## [1.1.0] - 2025-12-16
 
 ### Added
