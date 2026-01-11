@@ -2,15 +2,6 @@ name: Build iOS
 
 on:
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Build type'
-        required: true
-        default: 'app'
-        type: choice
-        options:
-          - app
-          - ipa
 
 jobs:
   build-ios:
@@ -30,31 +21,23 @@ jobs:
         run: flutter pub get
 
       - name: Build iOS App
-        if: ${{ github.event.inputs.build_type == 'app' }}
         run: flutter build ios --release --no-codesign
 
-      - name: Build iOS IPA
-        if: ${{ github.event.inputs.build_type == 'ipa' }}
-        run: flutter build ipa --release --no-codesign
-
-      - name: Compress App Bundle
-        if: ${{ github.event.inputs.build_type == 'app' }}
+      - name: Create IPA for TrollStore
         run: |
-          cd build/ios/iphoneos
-          zip -r Runner.app.zip Runner.app
-
-      - name: Upload App Bundle
-        if: ${{ github.event.inputs.build_type == 'app' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: beszel-ios-app
-          path: build/ios/iphoneos/Runner.app.zip
-          retention-days: 7
+          # Create Payload directory structure
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          
+          # Create unsigned IPA
+          zip -r Beszel.ipa Payload
+          
+          # Cleanup
+          rm -rf Payload
 
       - name: Upload IPA
-        if: ${{ github.event.inputs.build_type == 'ipa' }}
         uses: actions/upload-artifact@v4
         with:
-          name: beszel-ios-ipa
-          path: build/ios/ipa/*.ipa
+          name: Beszel-TrollStore-IPA
+          path: Beszel.ipa
           retention-days: 7
