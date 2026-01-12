@@ -42,18 +42,18 @@ class _SetupScreenState extends State<SetupScreen> {
     try {
       // Connect to PocketBase
       await PocketBaseService().connect(url);
-      
+
       // Verify connection by checking health
       await PocketBaseService().pb.health.check();
-      
+
       // Save URL for future app launches
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('pb_url', url);
 
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
       }
     } catch (e) {
       setState(() {
@@ -73,7 +73,32 @@ class _SetupScreenState extends State<SetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Setup Connection')),
+      appBar: AppBar(
+        title: Text('setup_title'.tr()),
+        actions: [
+          PopupMenuButton<Locale>(
+            icon: const Icon(Icons.language),
+            tooltip: 'Language',
+            onSelected: (Locale locale) {
+              context.setLocale(locale);
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<Locale>>[
+              const PopupMenuItem<Locale>(
+                value: Locale('en'),
+                child: Text('🇺🇸 English'),
+              ),
+              const PopupMenuItem<Locale>(
+                value: Locale('ru'),
+                child: Text('🇷🇺 Русский'),
+              ),
+              const PopupMenuItem<Locale>(
+                value: Locale('zh', 'CN'),
+                child: Text('🇨🇳 简体中文'),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -81,16 +106,19 @@ class _SetupScreenState extends State<SetupScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Enter Beszel Server URL',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                'enter_url'.tr(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               TextField(
                 controller: _urlController,
-                decoration: const InputDecoration(
-                  labelText: 'Server URL',
+                decoration: InputDecoration(
+                  labelText: 'server_url'.tr(),
                   hintText: 'https://monitor.mydomain.com',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.link),

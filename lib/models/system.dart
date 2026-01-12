@@ -10,6 +10,7 @@ class System {
   final double diskPercent;
   final String updated;
   final String? os;
+  final Map<String, dynamic> info;
 
   System({
     required this.id,
@@ -21,6 +22,7 @@ class System {
     required this.diskPercent,
     required this.updated,
     this.os,
+    required this.info,
   });
 
   factory System.fromRecord(RecordModel record) {
@@ -32,7 +34,9 @@ class System {
       return 0.0;
     }
 
-    final info = record.data['info'] is Map ? record.data['info'] as Map<String, dynamic> : <String, dynamic>{};
+    final info = record.data['info'] is Map
+        ? record.data['info'] as Map<String, dynamic>
+        : <String, dynamic>{};
 
     return System(
       id: record.id,
@@ -44,6 +48,7 @@ class System {
       diskPercent: toDouble(info['dp']),
       updated: record.updated,
       os: info['k'] as String?,
+      info: info,
     );
   }
 }

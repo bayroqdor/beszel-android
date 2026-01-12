@@ -79,3 +79,5 @@ web/favicon.png
 !/android/app/src/main/AndroidManifest.xml
 !/ios/Runner/Info.plist
 !/web/index.html
+
+*.hprof
